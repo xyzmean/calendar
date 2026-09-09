@@ -164,6 +164,9 @@ export default {
 				timeZone: this.timezoneId,
 				// Disable jumping in week view and day view when clicking on any event using the simple editor
 				scrollTimeReset: false,
+				// xcloud: open the day grid a quarter above 08:00 so the first
+				// hour label is not cut by the top edge (labels sit on the line).
+				scrollTime: '07:45:00',
 				// There is a custom resize observer
 				handleWindowResize: false,
 				// Dropping Tasks
