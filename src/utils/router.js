@@ -14,11 +14,28 @@ import {
  * @return {string}
  */
 export function getInitialView() {
+	let view
 	try {
-		return loadState('calendar', 'initial_view')
+		view = loadState('calendar', 'initial_view')
 	} catch {
-		return 'dayGridMonth'
+		view = 'dayGridMonth'
 	}
+
+	// A week grid on a phone is seven columns in 390 px: the day headers are
+	// cut off, the event titles degrade to one or two characters and the last
+	// day of the week hides under the floating button. Measured on a Pixel 8
+	// viewport, both with and without our theme, so it is not a theming
+	// artefact. Open the day instead — the same fallback FreeBusy already
+	// makes for a crowded week (see FreeBusy.vue), and the same breakpoint
+	// idea as getPreferredEditorRoute() below.
+	//
+	// Only the initial redirect is affected: the view lives in the route, so
+	// switching to the week by hand still works and still sticks.
+	if (view === 'timeGridWeek' && window.innerWidth <= 720) {
+		return 'timeGridDay'
+	}
+
+	return view
 }
 
 /**
