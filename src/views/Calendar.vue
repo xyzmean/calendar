@@ -53,18 +53,27 @@
 		</AppNavigation>
 		<EmbedTopNavigation v-if="isEmbedded" />
 		<AppContent>
+			<!-- Date range, navigation and the view switcher: the design puts
+			     them over the grid, not into the navigation column. -->
+			<CalendarTopBar v-if="!showEmptyCalendarScreen">
+				<!-- The unscheduled-tasks toggle used to float over the grid and
+				     sat on top of the last weekday caption; the bar is a row
+				     with room in it, so it does not have to float any more. -->
+				<template v-if="isAuthenticatedUser" #actions>
+					<NcButton
+						v-show="tasksSidebarEnabled"
+						class="toggle-button"
+						variant="tertiary"
+						:aria-label="t('calendar', 'Show unscheduled tasks')"
+						:title="t('calendar', 'Show unscheduled tasks')"
+						@click="toggletasksSidebar()">
+						<template #icon>
+							<PlaylistCheckIcon :size="20" />
+						</template>
+					</NcButton>
+				</template>
+			</CalendarTopBar>
 			<div class="calendar-wrapper">
-				<div v-if="isAuthenticatedUser" v-show="tasksSidebarEnabled" class="app-navigation-toggle-wrapper">
-					<NcActions class="toggle-button app-navigation-toggle--prevent-overlap">
-						<NcActionButton @click="toggletasksSidebar()">
-							<template #icon>
-								<PlaylistCheckIcon :size="20" />
-							</template>
-							{{ t('calendar', 'Show unscheduled tasks') }}
-						</NcActionButton>
-					</NcActions>
-				</div>
-
 				<CalendarGrid
 					v-if="!showEmptyCalendarScreen"
 					ref="CalendarGrid"
@@ -100,10 +109,9 @@ import { loadState } from '@nextcloud/initial-state'
 import {
 	NcAppContent as AppContent,
 	NcAppNavigation as AppNavigation,
-	NcActionButton,
-	NcActions,
 	NcAppSidebar,
 	NcAppSidebarTab,
+	NcButton,
 	NcContent,
 } from '@nextcloud/vue'
 import { mapState, mapStores } from 'pinia'
@@ -119,6 +127,7 @@ import Settings from '@/components/AppNavigation/Settings.vue'
 import UnscheduledTasksList from '@/components/AppNavigation/UnscheduledTasksList.vue'
 import CalendarGrid from '@/components/CalendarGrid.vue'
 import EmptyCalendar from '@/components/EmptyCalendar.vue'
+import CalendarTopBar from '@/components/TopBar/CalendarTopBar.vue'
 import EditSimple from '@/views/EditSimple.vue'
 import ProposalEditor from '@/views/Proposal/ProposalEditor.vue'
 import eventClick from '@/fullcalendar/interaction/eventClick.js'
@@ -157,6 +166,7 @@ export default {
 	components: {
 		AppointmentConfigList,
 		UnscheduledTasksList,
+		CalendarTopBar,
 		CalendarGrid,
 		EmptyCalendar,
 		EmbedTopNavigation,
@@ -169,8 +179,7 @@ export default {
 		Trashbin,
 		EditCalendarModal,
 		EditSimple,
-		NcActions,
-		NcActionButton,
+		NcButton,
 		PlaylistCheckIcon,
 		NcAppSidebar,
 		NcAppSidebarTab,
@@ -452,23 +461,22 @@ export default {
 </script>
 
 <style lang="scss">
-.app-navigation-toggle-wrapper {
-	position: absolute;
-	top: var(--app-navigation-padding);
-	inset-inline-end: 0;
+/* The grid takes the height left over by the top bar. NcAppContent has no
+   layout of its own, so it becomes the column that shares the height out;
+   without it .calendar-wrapper's own 100% would add up to 100% + 60px and
+   FullCalendar would scroll the whole app. */
+.app-content:has(> .calendar-top-bar) {
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
 }
 
 .calendar-wrapper {
 	position: relative;
+	flex: 1 1 auto;
+	min-height: 0;
 	height: 100%;
 	width: 100%;
-}
-
-.toggle-button {
-	position: absolute;
-	top: 2px;
-	inset-inline-end: var(--app-navigation-padding);
-	z-index: 1000;
 }
 
 .calendar-Widget {
