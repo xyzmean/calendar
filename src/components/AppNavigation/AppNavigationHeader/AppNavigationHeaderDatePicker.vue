@@ -4,153 +4,35 @@
 -->
 
 <script setup lang="ts">
-import { isRTL as isRTLFn, t } from '@nextcloud/l10n'
+import { isRTL as isRTLFn } from '@nextcloud/l10n'
 import { NcButton, NcDateTimePicker } from '@nextcloud/vue'
 import { useHotKey } from '@nextcloud/vue/composables/useHotKey'
-import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import ChevronLeftIcon from 'vue-material-design-icons/ChevronLeft.vue'
-import ChevronRightIcon from 'vue-material-design-icons/ChevronRight.vue'
+import { computed, toRef } from 'vue'
+import { useCalendarNavigation } from '@/composables/useCalendarNavigation'
 import formatDateRange from '@/filters/dateRangeFormat.js'
-import useSettingsStore from '@/store/settings.js'
-import useWidgetStore from '@/store/widget.js'
-import {
-	getDateFromFirstdayParam,
-	getYYYYMMDDFromDate,
-	modifyDate,
-} from '@/utils/date.js'
 
 const props = defineProps<{
 	isWidget?: boolean
 }>()
 
-const route = useRoute()
-const router = useRouter()
+// The embedded and widget headers are the only place this picker is left in:
+// the main layout navigates from the top bar of the grid. The navigation
+// itself is the same one, so it comes from the same composable.
+const {
+	selectedDate,
+	view,
+	momentLocale,
+	previousLabel,
+	nextLabel,
+	navigateToDate,
+	navigateTimeRangeForward,
+	navigateTimeRangeBackward,
+} = useCalendarNavigation(toRef(props, 'isWidget'))
 
-const widgetStore = useWidgetStore()
-const settingsStore = useSettingsStore()
 const isRTL = computed(() => isRTLFn())
 
-const selectedDate = computed<Date>(() => {
-	if (props.isWidget) {
-		return getDateFromFirstdayParam(widgetStore.widgetDate)
-	}
-	return getDateFromFirstdayParam(route.params?.firstDay ?? 'now')
-})
-
-const view = computed<string>(() => {
-	if (props.isWidget) {
-		return widgetStore.widgetView
-	}
-	return route.params.view
-})
-
 function dateFormatWrapper(date: Date): string {
-	return formatDateRange(date, view.value, settingsStore.momentLocale, false)
-}
-
-const previousLabel = computed(() => {
-	switch (view.value) {
-		case 'timeGridDay':
-			return t('calendar', 'Previous day')
-
-		case 'timeGridWeek':
-			return t('calendar', 'Previous week')
-
-		case 'multiMonthYear':
-			return t('calendar', 'Previous year')
-
-		case 'dayGridMonth':
-		default:
-			return t('calendar', 'Previous month')
-	}
-})
-
-const nextLabel = computed(() => {
-	switch (view.value) {
-		case 'timeGridDay':
-			return t('calendar', 'Next day')
-
-		case 'timeGridWeek':
-			return t('calendar', 'Next week')
-
-		case 'multiMonthYear':
-			return t('calendar', 'Next year')
-
-		case 'dayGridMonth':
-		default:
-			return t('calendar', 'Next month')
-	}
-})
-
-function navigateTimeRangeForward(): void {
-	navigateTimeRangeByFactor(1)
-}
-
-function navigateTimeRangeBackward(): void {
-	navigateTimeRangeByFactor(-1)
-}
-
-function navigateTimeRangeByFactor(factor: number): void {
-	let newDate: Date | undefined
-
-	switch (route.params.view) {
-		case 'timeGridDay':
-			newDate = modifyDate(selectedDate.value, {
-				day: factor,
-			})
-			break
-
-		case 'timeGridWeek':
-			newDate = modifyDate(selectedDate.value, {
-				week: factor,
-			})
-			break
-
-		case 'multiMonthYear':
-			newDate = modifyDate(selectedDate.value, {
-				year: factor,
-			})
-			break
-
-		case 'dayGridMonth':
-		case 'listMonth':
-		default: {
-		// modifyDate is just adding one month, so we have to manually
-		// set the date of month to 1. Otherwise if your date is set to
-		// January 30th and you add one month, February 30th doesn't exist
-		// and it automatically changes to March 1st. Same happens on March 31st.
-			const firstDayOfCurrentMonth = new Date(selectedDate.value.getTime())
-			firstDayOfCurrentMonth.setDate(1)
-			newDate = modifyDate(firstDayOfCurrentMonth, {
-				month: factor,
-			})
-			break
-		}
-	}
-
-	// newDate is always set at this point
-	// TODO: migrate modifyDate() to TypeScript to fix typing
-	navigateToDate(newDate!)
-}
-
-async function navigateToDate(date: Date): Promise<void> {
-	if (props.isWidget) {
-		widgetStore.setWidgetDate({ widgetDate: getYYYYMMDDFromDate(date) })
-	} else {
-		// Don't push new route when day didn't change
-		if (route.params.firstDay === getYYYYMMDDFromDate(date)) {
-			return
-		}
-
-		const name = route.name!
-		const params = {
-			...route.params,
-			firstDay: getYYYYMMDDFromDate(date),
-		}
-
-		await router.push({ name, params })
-	}
+	return formatDateRange(date, view.value, momentLocale.value)
 }
 
 useHotKey(['n', 'j'], () => navigateTimeRangeForward())
