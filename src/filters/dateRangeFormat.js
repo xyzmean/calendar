@@ -20,16 +20,33 @@ import moment from '@nextcloud/moment'
 function formatWeekRange(value, locale) {
 	const start = moment(value).locale(locale).startOf('week')
 	const end = moment(value).locale(locale).endOf('week')
+	const year = isThisYear(end) ? '' : ' YYYY'
 
 	if (start.year() !== end.year()) {
 		return `${start.format('D MMMM YYYY')} — ${end.format('D MMMM YYYY')}`
 	}
 
 	if (start.month() !== end.month()) {
-		return `${start.format('D MMMM')} — ${end.format('D MMMM')}`
+		return `${start.format('D MMMM')} — ${end.format('D MMMM' + year)}`
 	}
 
-	return `${start.format('D')} — ${end.format('D MMMM')}`
+	return `${start.format('D')} — ${end.format('D MMMM' + year)}`
+}
+
+/**
+ * Whether a date is in the year we are living in.
+ *
+ * The year is written out only when it is not: everything on the screen —
+ * the grid, the mini month, the day headers — is about the current year unless
+ * said otherwise, and repeating «2026» in every label buys nothing. It costs,
+ * though: on a 390px phone the day label «21 сент. 2026 г.» did not fit and was
+ * cut to «21 сент. 20…», which reads as a bug rather than as a date.
+ *
+ * @param {object} value A moment
+ * @return {boolean}
+ */
+function isThisYear(value) {
+	return value.year() === moment().year()
 }
 
 /**
@@ -42,8 +59,13 @@ function formatWeekRange(value, locale) {
  */
 export default (value, view, locale) => {
 	switch (view) {
-		case 'timeGridDay':
-			return moment(value).locale(locale).format('ll')
+		case 'timeGridDay': {
+			// Не `ll` («21 сент. 2026 г.»): у недели рядом стоит «21 — 27
+			// сентября», и один и тот же календарь не должен писать месяц то
+			// сокращённо, то полностью.
+			const day = moment(value).locale(locale)
+			return day.format(isThisYear(day) ? 'D MMMM' : 'D MMMM YYYY')
+		}
 
 		case 'timeGridWeek':
 			return formatWeekRange(value, locale)
