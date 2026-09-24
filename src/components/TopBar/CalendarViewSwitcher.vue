@@ -14,6 +14,7 @@ import ViewGrid from 'vue-material-design-icons/ViewGrid.vue'
 import ViewList from 'vue-material-design-icons/ViewList.vue'
 import ViewModule from 'vue-material-design-icons/ViewModule.vue'
 import ViewWeek from 'vue-material-design-icons/ViewWeek.vue'
+import PlainButton from '@/components/Shared/PlainButton.vue'
 import { useCalendarNavigation } from '@/composables/useCalendarNavigation'
 
 const { view, selectView } = useCalendarNavigation()
@@ -59,16 +60,15 @@ useHotKey(['l', '5'], () => selectView('listMonth'))
 
 <template>
 	<div class="calendar-view-switcher" role="group" :aria-label="t('calendar', 'Change view')">
-		<button
+		<PlainButton
 			v-for="segment in segments"
 			:key="segment.id"
-			type="button"
 			class="calendar-view-switcher__segment"
 			:class="{ 'calendar-view-switcher__segment--active': view === segment.id }"
 			:aria-pressed="view === segment.id"
 			@click="selectView(segment.id)">
 			{{ segment.label }}
-		</button>
+		</PlainButton>
 		<NcActions
 			class="calendar-view-switcher__more"
 			:title="t('calendar', 'Change view')"

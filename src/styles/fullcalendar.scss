@@ -208,7 +208,15 @@
 		align-content: center;
 
 		.fc-event-title-checkbox {
-			margin: 4px 4px 0 0;
+			// The title beside it is nowrap and usually longer than the
+			// block, so a shrinkable box gave up its width first: measured
+			// 8.6px by 16px, a tall slot that read as a zero, not a checkbox.
+			flex: 0 0 auto;
+			// Centred on the title line rather than pushed 4px down: in a
+			// one-line plate (a task is half an hour tall in the grid) the
+			// top margin put the box below the text.
+			align-self: center;
+			margin-inline-end: 4px;
 			line-height: 1;
 		}
 	}

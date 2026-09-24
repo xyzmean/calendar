@@ -21,6 +21,14 @@ export default defineConfig({
 		],
 		globals: true,
 		environment: 'jsdom',
+		// The TimePicker tests build their dates in local time and compare them
+		// with UTC instants, which holds only where the machine is on UTC — as
+		// upstream CI is. On a machine in Moscow four of them failed without a
+		// change to the code. The workers inherit this; the tests set their own
+		// zone where the zone is what they test.
+		env: {
+			TZ: 'UTC',
+		},
 		// Required for transforming CSS files
 		pool: 'vmForks',
 		// Increase timeouts for slow CI environments

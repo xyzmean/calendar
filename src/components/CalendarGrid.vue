@@ -40,6 +40,7 @@ import momentPlugin from '@/fullcalendar/localization/momentPlugin.js'
 // Import rendering handlers
 import dayCellDidMount from '@/fullcalendar/rendering/dayCellDidMount.js'
 import dayHeaderDidMount from '@/fullcalendar/rendering/dayHeaderDidMount.js'
+import eventContent from '@/fullcalendar/rendering/eventContent.js'
 import eventDidMount from '@/fullcalendar/rendering/eventDidMount.js'
 import {
 	allDayFirst,
@@ -144,6 +145,7 @@ export default {
 				// Rendering
 				dayCellDidMount,
 				dayHeaderDidMount,
+				eventContent,
 				eventDidMount,
 				noEventsDidMount,
 				eventOrder: [allDayFirst, allDayOrder, partDayOrder],

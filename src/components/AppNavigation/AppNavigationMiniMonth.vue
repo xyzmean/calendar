@@ -10,6 +10,7 @@ import { NcButton } from '@nextcloud/vue'
 import { computed, ref, watch } from 'vue'
 import ChevronLeftIcon from 'vue-material-design-icons/ChevronLeft.vue'
 import ChevronRightIcon from 'vue-material-design-icons/ChevronRight.vue'
+import PlainButton from '@/components/Shared/PlainButton.vue'
 import { useCalendarNavigation } from '@/composables/useCalendarNavigation'
 
 interface Day {
@@ -154,10 +155,9 @@ function showNextMonth(): void {
 
 		<div class="mini-month__grid">
 			<template v-for="(week, rowIndex) in weeks" :key="rowIndex">
-				<button
+				<PlainButton
 					v-for="day in week"
 					:key="day.key"
-					type="button"
 					class="mini-month__day"
 					:class="{
 						'mini-month__day--outside': day.outside,
@@ -170,7 +170,7 @@ function showNextMonth(): void {
 					:aria-current="day.today ? 'date' : undefined"
 					@click="navigateToDate(day.date)">
 					<span class="mini-month__number">{{ day.label }}</span>
-				</button>
+				</PlainButton>
 			</template>
 		</div>
 	</div>

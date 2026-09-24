@@ -252,7 +252,8 @@ export default errorCatch(function({ event, el }) {
 		|| el.classList.contains('fc-event-nc-declined')
 	) {
 		const titleElement = el.querySelector('.fc-event-title')
-		const timeElement = el.querySelector('.fc-event-time')
+		// Two in the time grid: the range and the start alone (eventContent.js)
+		const timeElements = el.querySelectorAll('.fc-event-time')
 		const dotElement = el.querySelector('.fc-daygrid-event-dot')
 
 		if (dotElement) {
@@ -282,9 +283,9 @@ export default errorCatch(function({ event, el }) {
 			titleElement.style.color = 'var(--color-main-text)'
 		}
 
-		if (timeElement) {
+		timeElements.forEach((timeElement) => {
 			timeElement.style.color = 'var(--color-main-text)'
-		}
+		})
 
 		el.title = t('calendar', 'All participants declined')
 
