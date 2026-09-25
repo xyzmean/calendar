@@ -7,13 +7,8 @@
 import { t } from '@nextcloud/l10n'
 import { computed } from 'vue'
 import NcAppNavigationSearch from '@nextcloud/vue/components/NcAppNavigationSearch'
-import AppNavigationHeaderNewEvent from '@/components/AppNavigation/AppNavigationHeader/AppNavigationHeaderNewEvent.vue'
 import AppNavigationMiniMonth from '@/components/AppNavigation/AppNavigationMiniMonth.vue'
 import useSettingsStore from '@/store/settings.js'
-
-defineProps<{
-	isPublic: boolean
-}>()
 
 const settingsStore = useSettingsStore()
 
@@ -30,11 +25,9 @@ const searchQuery = computed<string>({
 			:label="t('calendar', 'Filter events …')"
 			class="app-navigation-header__filter" />
 		<!-- Date navigation, the today button and the view switcher moved to
-		     the top bar of the grid (CalendarTopBar); what is left here is what
-		     the design keeps in the column: create, and the month to page. -->
-		<div class="new-event-today-view-section">
-			<AppNavigationHeaderNewEvent v-if="!isPublic" />
-		</div>
+		     the top bar of the grid (CalendarTopBar), and «new event» to the
+		     column heading (AppNavigationHeading); what is left here is the
+		     month to page. -->
 		<AppNavigationMiniMonth />
 	</header>
 </template>
@@ -43,13 +36,5 @@ const searchQuery = computed<string>({
 .app-navigation-header__filter {
 	padding: 0;
 	margin-bottom: var(--default-grid-baseline);
-}
-
-.new-event-today-view-section {
-	margin-bottom: calc(var(--default-grid-baseline) * 2);
-
-	:deep(.new-event) {
-		width: 100%;
-	}
 }
 </style>

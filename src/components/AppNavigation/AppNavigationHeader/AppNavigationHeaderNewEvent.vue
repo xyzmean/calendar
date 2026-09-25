@@ -27,14 +27,17 @@ useHotKey('c', () => newEvent())
 </script>
 
 <template>
+	<!-- The design puts «new event» where Tasks and Boards put theirs: a «+»
+	     next to the column heading, not a full-width primary button that took
+	     a row of its own above the month. -->
 	<NcButton
 		class="new-event"
-		variant="primary"
+		variant="secondary"
 		:aria-label="newEventButtonAriaLabel"
+		:title="newEventButtonAriaLabel"
 		@click="newEvent">
 		<template #icon>
 			<Plus :size="20" />
 		</template>
-		{{ t('calendar', 'Event') }}
 	</NcButton>
 </template>

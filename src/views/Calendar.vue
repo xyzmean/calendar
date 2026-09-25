@@ -21,8 +21,11 @@
 		<AppNavigation
 			v-if="!isWidget && !isEmbedded && !showEmptyCalendarScreen"
 			aria-label="Calendar navigation">
-			<!-- Date Picker, View Buttons, Today Button -->
-			<AppNavigationHeader :isPublic="!isAuthenticatedUser" />
+			<template #search>
+				<AppNavigationHeading :isPublic="!isAuthenticatedUser" />
+			</template>
+			<!-- Event filter and the month to page -->
+			<AppNavigationHeader />
 			<template #list>
 				<!-- Calendar / Subscription List -->
 				<CalendarList
@@ -117,6 +120,7 @@ import {
 import { mapState, mapStores } from 'pinia'
 import PlaylistCheckIcon from 'vue-material-design-icons/PlaylistCheck.vue'
 import AppNavigationHeader from '@/components/AppNavigation/AppNavigationHeader.vue'
+import AppNavigationHeading from '@/components/AppNavigation/AppNavigationHeading.vue'
 import AppointmentConfigList from '@/components/AppNavigation/AppointmentConfigList.vue'
 import CalendarList from '@/components/AppNavigation/CalendarList.vue'
 import Trashbin from '@/components/AppNavigation/CalendarList/Trashbin.vue'
@@ -173,6 +177,7 @@ export default {
 		Settings,
 		CalendarList,
 		AppNavigationHeader,
+		AppNavigationHeading,
 		NcContent,
 		AppContent,
 		AppNavigation,

@@ -71,7 +71,7 @@ useHotKey('t', () => goToToday())
 			:title="t('calendar', 'Today')"
 			@click="goToToday">
 			<template #icon>
-				<CalendarTodayIcon class="calendar-top-bar__today-icon" :size="18" />
+				<CalendarTodayIcon :size="18" />
 			</template>
 			<span class="calendar-top-bar__today-label">{{ t('calendar', 'Today') }}</span>
 		</NcButton>
@@ -139,6 +139,7 @@ useHotKey('t', () => goToToday())
 	&__today {
 		height: 30px !important;
 		min-height: 30px !important;
+		padding-inline: 12px !important;
 		border-radius: 8px !important;
 		font-size: 13.5px;
 		font-weight: 500 !important;
@@ -147,7 +148,11 @@ useHotKey('t', () => goToToday())
 
 	// A phone has 390px for the whole bar. The word «Сегодня» is 60 of them,
 	// and it was taking them from the date — which was left showing «1.».
-	&__today-icon {
+	// On a wide screen the button is the word alone, as in the design. What is
+	// hidden is NcButton's icon box, not the icon in it: the box is 30px wide
+	// and kept its width with an empty icon, which read as a gap before the
+	// word; NcButton also pads an icon-and-text button 4px on the icon side.
+	&__today :deep(.button-vue__icon) {
 		display: none;
 	}
 
@@ -169,8 +174,8 @@ useHotKey('t', () => goToToday())
 			display: none;
 		}
 
-		.calendar-top-bar__today-icon {
-			display: block;
+		.calendar-top-bar__today :deep(.button-vue__icon) {
+			display: flex;
 		}
 
 		.calendar-top-bar__today {
